@@ -1,3 +1,14 @@
+const SHAPE_ELEMENTS = new Set([
+  'path',
+  'rect',
+  'circle',
+  'ellipse',
+  'polygon',
+  'polyline',
+  'line',
+  'text',
+])
+
 const ATTRIBUTE_MAP: Record<string, string> = {
   fill: 'param(fill)',
   'fill-opacity': 'param(fill-opacity)',
@@ -6,17 +17,26 @@ const ATTRIBUTE_MAP: Record<string, string> = {
   'stroke-width': 'param(outline-width)',
 }
 
+function isShapeElement(element: Element): boolean {
+  return SHAPE_ELEMENTS.has(element.tagName.toLowerCase())
+}
+
+function shouldPreserveOriginal(value: string | null): boolean {
+  return value !== null && value !== 'none' && value !== ''
+}
+
 function replaceAttributes(element: Element, preserveOriginal: boolean): void {
-  Object.entries(ATTRIBUTE_MAP).forEach(([attr, paramValue]) => {
-    if (element.hasAttribute(attr)) {
+  if (isShapeElement(element)) {
+    Object.entries(ATTRIBUTE_MAP).forEach(([attr, paramValue]) => {
       const originalValue = element.getAttribute(attr)
-      if (preserveOriginal && originalValue) {
+      
+      if (preserveOriginal && shouldPreserveOriginal(originalValue)) {
         element.setAttribute(attr, `${paramValue} ${originalValue}`)
       } else {
         element.setAttribute(attr, paramValue)
       }
-    }
-  })
+    })
+  }
 
   Array.from(element.children).forEach(child => {
     if (child instanceof Element) {
@@ -25,7 +45,10 @@ function replaceAttributes(element: Element, preserveOriginal: boolean): void {
   })
 }
 
+
 export function processSvg(svgContent: string, preserveOriginal: boolean = false): string {
+  console.log('[svgProcessor] processSvg called, preserveOriginal:', preserveOriginal)
+  
   try {
     const parser = new DOMParser()
     const doc = parser.parseFromString(svgContent, 'image/svg+xml')
@@ -38,8 +61,10 @@ export function processSvg(svgContent: string, preserveOriginal: boolean = false
     replaceAttributes(svgElement, preserveOriginal)
 
     const serializer = new XMLSerializer()
-    return serializer.serializeToString(doc)
+    const result = serializer.serializeToString(doc)
+    return result
   } catch (error) {
+    console.error('[svgProcessor] Error:', error)
     throw new Error(`Failed to process SVG: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

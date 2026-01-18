@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { processSvg, downloadSvg } from './utils/svgProcessor'
 import { applyParamsToSvg, type SvgParams, defaultParams } from './utils/svgPreview'
 import './App.css'
@@ -14,8 +14,34 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const previewSvg = useMemo(() => {
-    return processedSvg ? applyParamsToSvg(processedSvg, params) : null
+    if (processedSvg) {
+      return applyParamsToSvg(processedSvg, params)
+    }
+    return null
   }, [processedSvg, params])
+
+
+  useEffect(() => {
+    if (originalSvg) {
+      try {
+        const processed = processSvg(originalSvg, preserveOriginal)
+        setProcessedSvg(processed)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to process SVG')
+      }
+    }
+  }, [preserveOriginal, originalSvg])
+
+
+
+
+
+
+
+
+
+
+
 
   const handleFile = useCallback((file: File) => {
     setError('')
@@ -34,8 +60,6 @@ function App() {
         const content = e.target?.result as string
         setOriginalSvg(content)
         setFileName(file.name)
-        const processed = processSvg(content, preserveOriginal)
-        setProcessedSvg(processed)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to process SVG')
       }
@@ -44,7 +68,7 @@ function App() {
       setError('Failed to read file')
     }
     reader.readAsText(file)
-  }, [preserveOriginal])
+  }, [])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -79,9 +103,12 @@ function App() {
   const handleDownload = useCallback(() => {
     if (processedSvg && fileName && originalSvg) {
       try {
-        const svgToDownload = preserveOriginal
-          ? processSvg(originalSvg, true)
-          : processedSvg
+        let svgToDownload
+        if (preserveOriginal) {
+          svgToDownload = processSvg(originalSvg, true)
+        } else {
+          svgToDownload = processedSvg
+        }
         const newFileName = fileName.replace(/\.svg$/i, '-qgis.svg')
         downloadSvg(svgToDownload, newFileName)
       } catch (err) {
