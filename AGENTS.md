@@ -4,11 +4,20 @@ This document provides guidelines for agentic coding assistants working on this 
 
 ## Development Commands
 
+### Package Manager
+- **pnpm** is used as the package manager (not npm)
+- All commands should use `pnpm run` instead of `npm run`
+
 ### Essential Commands
-- **Start dev server**: `npm run dev`
-- **Build for production**: `npm run build`
-- **Lint code**: `npm run lint`
-- **Preview production build**: `npm run preview`
+- **Start dev server**: `pnpm run dev`
+- **Build for production**: `pnpm run build`
+- **Lint code**: `pnpm run lint`
+- **Preview production build**: `pnpm run preview`
+
+### Installing Dependencies
+- Install all dependencies: `pnpm install`
+- Install a specific package: `pnpm add <package-name>`
+- Install dev dependency: `pnpm add -D <package-name>`
 
 ### Testing
 No test suite is currently configured. When adding tests:
@@ -70,6 +79,9 @@ No test suite is currently configured. When adding tests:
 - Recursively traverse element children
 - Use `Array.from()` when iterating over HTMLCollections
 - Always validate input SVG content
+- **Shape elements only**: Only add QGIS parameters to shape elements (`path`, `rect`, `circle`, `ellipse`, `polygon`, `polyline`, `line`, `text`)
+- **Add all parameters**: Always add all 5 QGIS parameters to shape elements, not just replace existing ones
+- **Preserve logic**: When preserve option is enabled, append original values if they exist and are not "none"
 
 ### CSS Guidelines
 - Separate CSS files per component
