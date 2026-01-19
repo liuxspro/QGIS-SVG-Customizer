@@ -1,73 +1,113 @@
-# React + TypeScript + Vite
+# QGIS SVG Customizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based tool to convert SVG files into QGIS-compatible format with customizable color parameters.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **SVG Upload**: Drag & drop or click to upload SVG files
+- **QGIS Parameter Conversion**: Automatically converts SVG attributes to QGIS dynamic parameters:
+  - `param(fill)` - Fill color
+  - `param(fill-opacity)` - Fill opacity
+  - `param(outline)` - Stroke color
+  - `param(outline-opacity)` - Stroke opacity
+  - `param(outline-width)` - Stroke width
+- **Live Preview**: Real-time preview with customizable parameters:
+  - Fill color picker
+  - Fill opacity slider (0-1)
+  - Stroke color picker
+  - Stroke opacity slider (0-1)
+  - Stroke width slider (0-10px)
+- **Preserve Original Attributes**: Option to preserve original SVG values alongside QGIS parameters
+- **Side-by-Side View**: Compare original SVG with QGIS-compatible preview
+- **Download**: Export converted SVG with QGIS parameters
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** - UI framework
+- **TypeScript** - Type-safe development
+- **Vite (rolldown)** - Build tool and dev server
+- **pnpm** - Package manager
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js (v18 or higher)
+- pnpm package manager
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Clone the repository
+git clone <repository-url>
+cd qgis-svg-custom
+
+# Install dependencies
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Start development server
+pnpm run dev
 ```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Build
+
+```bash
+# Build for production
+pnpm run build
+```
+
+### Preview Production Build
+
+```bash
+# Preview production build locally
+pnpm run preview
+```
+
+### Linting
+
+```bash
+# Run ESLint
+pnpm run lint
+```
+
+## Usage
+
+1. **Upload SVG**: Click the upload zone or drag & drop an SVG file
+2. **Adjust Parameters**: Use the control panel to customize:
+   - Fill color and opacity
+   - Stroke color, opacity, and width
+3. **Toggle Preserve Option**: Enable "Preserve Original Attributes" to keep original values
+4. **Preview Changes**: See real-time preview on the right side
+5. **Download**: Click "Download QGIS SVG" to export the converted file
+
+## How It Works
+
+The tool processes SVG files by:
+
+1. Parsing the SVG using DOMParser
+2. Replacing static attributes with QGIS dynamic parameters on shape elements (path, rect, circle, ellipse, polygon, polyline, line, text)
+3. Preserving original values if the option is enabled
+4. Applying temporary values for preview visualization
+5. Generating downloadable SVG with QGIS parameters
+
+## File Structure
+
+```
+src/
+├── App.tsx              # Main application component
+├── main.tsx            # Entry point
+├── App.css             # Component styles
+└── utils/
+    ├── svgProcessor.ts # SVG processing and conversion logic
+    └── svgPreview.ts   # Preview parameter application logic
+```
+
+## License
+
+MIT
